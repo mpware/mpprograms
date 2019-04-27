@@ -1,0 +1,57 @@
+.model small
+	.stack 64                                                         ; initialize the stack segment
+.data
+	msg1 db 0Dh,0Ah,"Enter the input to be converted:(00h-Fh)",'$'
+	msg2 db 0Dh,0Ah,"gray equivalent of binary is:",'$'
+	msg3 db 0Dh,0Ah,"do u want to repeat: Y/N",'$'
+	lk_up db 00h,01h,03h,02h,06h,07h,05h,04h,12h,13h,15h,14h,10h,11h,09h,08h
+	.code 
+                   mov ax,@data
+                   mov ds,ax
+                   mov es,ax
+
+again:   lea dx,msg1                              ;ask for input to be converted
+	mov ah,09h
+	   int 21h
+                           mov ah,01h                          ;accept the input to be converted
+int 21h	
+                           sub al,30h                                  ;convert the ASCII input
+cmp al,0Ah
+                           jna nxt1
+                           sub al,07h                                   ;get the hex value if the input is >9
+	
+nxt1:       lea bx,lk_up
+                            xlat;translate the input in to its equivalent
+push ax
+                            lea dx,msg2
+                            mov ah,09h
+                            int 21h;display the message2 on console 
+	pop ax
+	mov bl,al
+	and al,0F0h
+	mov cl,04h
+	ror al,cl
+	add al,30h
+	mov dl,al
+	mov ah,02h                             ;display the MS nibble of the output data
+;on VDU.
+int 21h	
+	mov al,bl
+	and al,0Fh
+	add al,30h
+	mov dl,al
+	mov ah,02h                                  ;display the ls nibble output on vdu
+	int 21h
+	lea dx,msg3                                ;ask whether to terminate or continue
+	mov ah,09h
+	int 21h
+	mov ah,01h                                  ;accept the decision
+	int 21h
+	cmp al,"Y"
+	je again
+	mov ah,4ch;terminate the program
+	int 21h
+                        end
+	
+	
+
