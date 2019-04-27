@@ -1,0 +1,44 @@
+Program:
+	.MODEL SMALL
+	.DATA
+	N1 DW 2222H,1111H            ;2222H is Most Significant Word(MSW)
+	N2 DW 4444H,3333H	;4444H is MSW & 3333H is LSW
+	RESULT DW 4 DUP(0)
+	.CODE
+	MOV AX,@DATA
+	MOV DS,AX
+	MOV ES,AX
+	
+	MOV SI,OFFSET N1
+	MOV DI,OFFSET N2
+	MOV BP,OFFSET RESULT
+
+	MOV AX,[SI+2]      		;AX=N1 of LSW
+	MOV DX,[DI+2]     		;DX=N2 of LSW
+	MUL DX                                 
+	MOV DS:[BP],AX    		 ; Store LSW of RESULT
+	MOV CX,DX
+	MOV AX,[SI+2]      		 ;AX=N1 of LSW
+	MOV DX,[DI]       		 ;DX=N2 of MSW
+	MUL DX
+	MOV BX,DX
+	ADD CX,AX
+	ADC BX,0000H
+	MOV AX,[SI]        		  ;AX=N1 OF MSW
+	MOV DX,[DI+2]       		  ;DX=N2 OF LSW
+	MUL DX
+	ADD CX,AX
+	ADC BX,DX
+	MOV DS:[BP+2],CX   	   ;Store Second Word of RESULT
+	MOV CX,0000H
+	ADC CX,0000H
+	MOV AX,[SI]        		   ;AX=N1 OF MSW
+	MOV DX,[DI]        		   ;DX=N2 OF MSW
+	MUL DX
+	ADD AX,BX
+	ADC DX,CX
+	MOV DS:[BP+4],AX   	    ;Store third Word of RESULT
+	MOV DS:[BP+6],DX   	    ;Store MSW of RESULT
+	MOV AH,4CH
+	INT 21H
+	END
