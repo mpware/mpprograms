@@ -1,0 +1,23 @@
+. MODEL SMALL
+	. DATA
+	ARRAY1	DB 02H, 04H, 06H, 08H, 0AH    ; declaring an array1 of N bytes
+	LEN 	DW $-ARRAY1			      ; finding length of array1
+	.CODE
+	MOV AX, @DATA				      ; Initialization of DS & ES
+	MOV DS, AX					
+	MOV ES,AX
+	MOV SI, OFFSET ARRAY1			      ; make SI to point array1 
+	MOV CX, LEN				      ; taking count to CX register
+	ADD SI, CX
+	DEC SI
+	MOV DI, SI
+	ADD DI, 02					      ; overlapping occurs at second 								                  ; position in array1
+	BACK:     MOV	AL, [SI]		      ; exchanging the content of SI and DI      
+							      ; Until CX=0 repeat loop back
+		      MOV	[DI], AL		
+		      DEC 	SI
+		      DEC 	DI
+		      LOOP	 BACK
+	MOV AH, 4CH				        ; to terminate a program 
+	INT	21H				
+	END			
